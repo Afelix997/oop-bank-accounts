@@ -1,4 +1,4 @@
-from audioop import add
+from datetime import date
 import csv
 
 class Bank:
@@ -19,7 +19,7 @@ class Owner:
 
     def all_owners():
         own_list = []
-        path = r"C:\Users\natha\Documents\Coding\oop-bank-accounts\support\owners.csv"
+        path = r"/Users/angelfelix/Desktop/CodeP/homework/week_3/day_2/oop-bank-accounts/support/owners.csv"
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -35,6 +35,7 @@ class Account():
         self.id = id
         self.balance = initial_balance
         self.open_date = open_date
+        self.owner=''
 
     def __str__(self):
         return self.id
@@ -51,21 +52,24 @@ class Account():
         return self.balance
 
     def add_owner(self):
-        self.owner = Owner()
-
-        path = r"C:\Users\natha\Documents\Coding\oop-bank-accounts\support\account_owners.csv"
+        owners_list=Owner.all_owners()
+        path = r"/Users/angelfelix/Desktop/CodeP/homework/week_3/day_2/oop-bank-accounts/support/account_owners.csv"
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                own_list.append(Owner(int(row['ID']), row['L_name'], row["F_name"], row['street_address'], row['city'], row['state']))
-
+                if row['accountID']==self.id:
+                    for item in owners_list:
+                        temp_id=item.user_id
+                        if int(row['userID']) == item.user_id:
+                            self.owner= item.full_name
+                            print(self.owner)
     def all_accounts():
         acc_list = []
-        path = r"C:\Users\natha\Documents\Coding\oop-bank-accounts\support\accounts.csv"
+        path = r"/Users/angelfelix/Desktop/CodeP/homework/week_3/day_2/oop-bank-accounts/support/accounts.csv"
         with open(path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                acc_list.append(Account(int(row['ID']), int(row['Balance']), row["Open_date"]))
+                acc_list.append(Account(row['ID'], int(row['Balance']), row["Open_date"]))
 
         return acc_list
 
@@ -80,26 +84,47 @@ class Savings_account(Account):
         if initial_balance < 10:
             raise ValueError ('Initial savings balance cannot be less than $10.')
         self.id = id
-        self.initial_balance = initial_balance
+        self.balance= initial_balance
 
     def add_interest(rate):
         pass
 
-    def withdrawl(amount):
-        pass
-
-    
-
-
+    def withdrawl(self,amount):
+        if amount+2 > (self.balance-10):
+            print('Sorry, insufficient account balance for withdrawl.')
+        else:
+            self.balance -= amount+2
+        return self.balance
+    def add_interest(self,rate):
+        applied_int=self.balance * rate/100
+        self.balance+=applied_int
+        return applied_int
+class CheckingAccount(Account):
+ 
+    def withdrawl(self,amount):
+        if amount+1 > self.balance:
+            print('Sorry, insufficient account balance for withdrawl.')
+        else:
+            self.balance -= (amount+1)
+        return self.balance
+    def withdraw_using_check(self,amount):
+        if amount > self.balance+10:
+            print('Sorry,max overdraft is $10')
+        else:
+            self.balance -= (amount+1)
+        return self.balance
 
 
 # Acc1 = Account(123, 10)
 # Acc1.add_owner('Jeff', '121 w street road', '20')
 # print(Acc1.owner)
 
-print(Account.find('1212'))
+# print(Account.find('1212'))
 list1 = Account.all_accounts()
 
-persona = list1[0]
+print(list1[0].open_date)
+    # print(object.owner)
+for obj in list1:
+    obj.add_owner()
 
-print(persona.id)
+# 1212.add_owner()
